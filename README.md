@@ -1,2 +1,2 @@
 # https-blazetv.xyz
-Free tv 
+Free tv Kodi addon 
