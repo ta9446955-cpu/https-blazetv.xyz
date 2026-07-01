@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings version="2">
+<settings version="1">
     <category label="Server Settings">
         <group label="Credentials">
             <setting id="server_url" type="text" label="Server URL" default="http://mains.services/get.php"/>
