@@ -1,1 +1,90 @@
+# Kodi Media Center language file
+# Addon Name: BlazeTv
+# Addon id: plugin.video.blazetv
+# Addon Provider: BlazeTV
+msgid ""
+msgstr ""
 
+msgctxt "#30000"
+msgid "Server Settings"
+msgstr ""
+
+msgctxt "#30001"
+msgid "M3U Playlist"
+msgstr ""
+
+msgctxt "#30002"
+msgid "M3U Playlist URL or File"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Select M3U Playlist File or Enter URL"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Xtream Codes (optional - leave M3U URL blank to use this instead)"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Server URL"
+msgstr ""
+
+msgctxt "#30006"
+msgid "Username"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Password"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Stream Type (m3u_plus/m3u/pls)"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Output Format (ts/m3u8)"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Display"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Interface"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Show Channel Categories"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Load EPG Data"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Cache Duration (minutes)"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Features"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Enable Channel Search"
+msgstr ""
+
+msgctxt "#30018"
+msgid "Enable Playback History"
+msgstr ""
+
+msgctxt "#30019"
+msgid "Keep History (days)"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Enable Debug Logging"
+msgstr ""
