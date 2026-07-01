@@ -1,155 +1,141 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-M3U Playlist Parser
-Fetches and parses M3U playlists from the server
+M3U Playlist Parser for BlazeTv Addon
 """
 
 import requests
 import xbmc
-import re
-from datetime import datetime
-import os
-
+from urllib.parse import unquote
 
 class M3UParser:
-    """Parse M3U playlists"""
+    """
+    Parse M3U playlists from remote server
+    """
     
     def __init__(self, config):
         self.config = config
         self.channels = []
         self.categories = {}
-        self.last_update = None
     
-    def fetch_playlist(self, force_refresh=False):
-        """Fetch M3U playlist from server"""
-        cache_file = os.path.join(self.config.get_cache_dir(), 'm3u_cache.m3u')
-        
-        # Check cache validity
-        if not force_refresh and self.config.is_cache_valid(cache_file):
-            xbmc.log('[BlazeTv] Using cached playlist')
-            return self._load_from_file(cache_file)
-        
+    def fetch_playlist(self):
+        """
+        Fetch M3U playlist from configured server
+        """
         try:
-            url = self.config.get_server_url()
-            if not url:
-                xbmc.log('[BlazeTv] No server URL configured')
-                return None
+            username = self.config.get_username()
+            password = self.config.get_password()
+            server_url = self.config.get_server_url()
+            stream_type = self.config.get_stream_type()
             
-            xbmc.log(f'[BlazeTv] Fetching playlist from server...')
+            if not username or not password:
+                raise Exception('Missing credentials')
+            
+            # Build URL
+            url = f"{server_url}?username={username}&password={password}&type={stream_type}"
+            
+            xbmc.log(f'[BlazeTv] Fetching playlist from: {url}', xbmc.LOGDEBUG)
+            
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             
-            # Cache the response
-            with open(cache_file, 'w', encoding='utf-8') as f:
-                f.write(response.text)
-            
-            xbmc.log('[BlazeTv] Playlist cached successfully')
             return response.text
-        except requests.exceptions.RequestException as e:
-            xbmc.log(f'[BlazeTv] Failed to fetch playlist: {str(e)}', xbmc.LOGWARNING)
-            # Try to use cached version if available
-            if os.path.exists(cache_file):
-                xbmc.log('[BlazeTv] Using cached playlist (fetch failed)')
-                return self._load_from_file(cache_file)
-            return None
-    
-    def _load_from_file(self, filepath):
-        """Load M3U from file"""
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                return f.read()
         except Exception as e:
-            xbmc.log(f'[BlazeTv] Error reading file: {str(e)}', xbmc.LOGWARNING)
-            return None
+            xbmc.log(f'[BlazeTv] Error fetching playlist: {str(e)}', xbmc.LOGWARNING)
+            raise
     
-    def parse(self):
-        """Parse M3U content"""
-        content = self.fetch_playlist()
-        if not content:
-            return False
-        
+    def parse_playlist(self, content):
+        """
+        Parse M3U content
+        """
         self.channels = []
         self.categories = {}
         
         lines = content.split('\n')
-        current_channel = None
+        i = 0
         
-        for line in lines:
-            line = line.strip()
+        while i < len(lines):
+            line = lines[i].strip()
             
-            # Skip empty lines and M3U header
-            if not line or line.startswith('#EXTM3U'):
-                continue
+            if line.startswith('#EXTINF:'):
+                channel = self._parse_extinf(line)
+                
+                # Get stream URL from next line
+                if i + 1 < len(lines):
+                    stream_url = lines[i + 1].strip()
+                    if stream_url and not stream_url.startswith('#'):
+                        channel['url'] = stream_url
+                        self.channels.append(channel)
+                        
+                        # Track categories
+                        category = channel.get('group_title', 'Uncategorized')
+                        if category not in self.categories:
+                            self.categories[category] = []
+                        self.categories[category].append(channel)
+                        i += 1
             
-            # Parse EXTINF header
-            if line.startswith('#EXTINF'):
-                current_channel = self._parse_extinf(line)
-            # Parse channel URL
-            elif current_channel and not line.startswith('#'):
-                current_channel['url'] = line
-                self.channels.append(current_channel)
-                
-                # Add to categories
-                group = current_channel.get('group_title', 'Uncategorized')
-                if group not in self.categories:
-                    self.categories[group] = []
-                self.categories[group].append(current_channel)
-                
-                current_channel = None
-        
-        self.last_update = datetime.now()
-        xbmc.log(f'[BlazeTv] Parsed {len(self.channels)} channels')
-        return True
+            i += 1
     
-    def _parse_extinf(self, line):
-        """Parse EXTINF line to extract channel info"""
-        channel = {
-            'name': '',
-            'logo': '',
-            'group_title': '',
-            'tvg_id': '',
-            'tvg_name': '',
-        }
+    def _parse_extinf(self, extinf_line):
+        """
+        Parse EXTINF line
+        Example: #EXTINF:-1 tvg-id="1" tvg-name="Channel 1" group-title="News",Channel 1
+        """
+        channel = {'name': '', 'logo': '', 'group_title': ''}
         
-        # Extract info from line: #EXTINF:-1 tvg-id="..." tvg-name="..." tvg-logo="..." group-title="...",Channel Name
+        # Extract name (after last comma)
+        parts = extinf_line.split(',')
+        if len(parts) > 1:
+            channel['name'] = parts[-1].strip()
         
         # Extract attributes
-        attrs = re.findall(r'(\w+(?:-\w+)*)="([^"]*)"', line)
-        for attr, value in attrs:
-            attr_lower = attr.lower().replace('-', '_')
-            if attr_lower == 'tvg_id':
-                channel['tvg_id'] = value
-            elif attr_lower == 'tvg_name':
-                channel['tvg_name'] = value
-            elif attr_lower == 'tvg_logo':
-                channel['logo'] = value
-            elif attr_lower == 'group_title':
-                channel['group_title'] = value
+        attrs_part = ','.join(parts[:-1])
         
-        # Extract channel name (after the comma)
-        name_match = re.search(r',(.+)$', line)
-        if name_match:
-            channel['name'] = name_match.group(1).strip()
+        # Parse tvg-id
+        if 'tvg-id="' in attrs_part:
+            start = attrs_part.find('tvg-id="') + 8
+            end = attrs_part.find('"', start)
+            channel['tvg_id'] = attrs_part[start:end]
+        
+        # Parse tvg-name
+        if 'tvg-name="' in attrs_part:
+            start = attrs_part.find('tvg-name="') + 10
+            end = attrs_part.find('"', start)
+            channel['tvg_name'] = attrs_part[start:end]
+        
+        # Parse tvg-logo
+        if 'tvg-logo="' in attrs_part:
+            start = attrs_part.find('tvg-logo="') + 10
+            end = attrs_part.find('"', start)
+            channel['logo'] = attrs_part[start:end]
+        
+        # Parse group-title
+        if 'group-title="' in attrs_part:
+            start = attrs_part.find('group-title="') + 13
+            end = attrs_part.find('"', start)
+            channel['group_title'] = attrs_part[start:end]
         
         return channel
     
     def get_channels(self, category=None):
-        """Get channels, optionally filtered by category"""
+        """
+        Get channels, optionally filtered by category
+        """
         if not self.channels:
-            self.parse()
+            content = self.fetch_playlist()
+            self.parse_playlist(content)
         
-        if category:
-            return self.categories.get(category, [])
+        if category and category in self.categories:
+            return self.categories[category]
+        
         return self.channels
     
     def get_categories(self):
-        """Get all categories"""
+        """
+        Get all available categories
+        """
         if not self.channels:
-            self.parse()
+            content = self.fetch_playlist()
+            self.parse_playlist(content)
         
         return list(self.categories.keys())
-    
-    def refresh(self):
-        """Force refresh of playlist"""
-        self.parse()
-        return True
