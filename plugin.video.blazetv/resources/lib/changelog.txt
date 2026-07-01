@@ -1,0 +1,51 @@
+[1.0.7] - 2026-07-01
+Added
+- M3U Playlist URL setting is now a file browser button instead of a plain text box. You can browse to and select an .m3u file from local/downloaded storage, or still type a URL directly.
+
+[1.0.6] - 2026-07-01
+Fixed
+- The "Configure" button in the addon info screen was greyed out and Settings had zero fields because settings.xml was written in Kodi's old pre-Matrix (v18 "Leia") format, which current Kodi versions don't parse. Rewrote settings.xml in the modern Kodi 19+ schema so Configure now works and shows all fields including M3U Playlist URL.
+
+[1.0.5] - 2026-07-01
+Fixed
+- Settings menu wouldn't open (and every action was blocked) whenever Xtream Codes username/password were left blank, even if a valid M3U URL was set. The addon now routes normally regardless of which method you're using.
+
+[1.0.4] - 2026-07-01
+Fixed
+- Added a proper "M3U Playlist URL" setting so you can paste a direct M3U link (or local file path) instead of only Xtream Codes credentials
+- Fixed error when trying to load channels without Xtream Codes username/password set
+- Direct M3U URL now takes priority over Xtream Codes settings when both are filled in
+
+[1.0.0] - 2024-01-01
+Initial Release
+- Live channel streaming from M3U playlists
+- Channel browsing by category
+- Channel search functionality with fuzzy matching
+- Playback history tracking
+- EPG (Electronic Program Guide) support
+- Configurable server credentials
+- Playlist caching for offline access
+- Debug logging support
+
+Features:
+✓ Browse and stream live TV channels
+✓ Organize channels by category
+✓ Search for channels by name
+✓ Track watched channels with history
+✓ View program guide information
+✓ Automatic playlist caching
+✓ Configurable cache duration
+✓ Playback statistics
+
+Known Limitations:
+- EPG is placeholder (requires external XMLTV source integration)
+- Some features may require additional configuration
+
+Future Enhancements:
+- XMLTV EPG integration
+- Favorites/bookmarking
+- Channel sorting options
+- Subtitle support
+- Recording functionality
+- Advanced scheduling
+- Multi-account support
