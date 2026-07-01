@@ -1,58 +1,62 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Configuration Handler for BlazeTv Addon
+BlazeTv Config Handler - Manages addon settings and configuration
 """
 
 import xbmcaddon
-import xbmc
-import os
 
-ADDON = xbmcaddon.Addon()
 
 class Config:
-    """
-    Handle all addon configuration settings
-    """
+    """Handle addon configuration and settings"""
     
     def __init__(self):
-        self.addon = ADDON
+        self.addon = xbmcaddon.Addon('plugin.video.blazetv')
     
-    def get(self, setting):
-        """
-        Get a setting value
-        """
+    def get(self, key, default=None):
+        """Get setting value"""
         try:
-            return self.addon.getSetting(setting)
-        except Exception as e:
-            xbmc.log(f'[BlazeTv Config] Error getting setting {setting}: {str(e)}', xbmc.LOGWARNING)
-            return None
+            return self.addon.getSetting(key)
+        except:
+            return default
     
-    def set(self, setting, value):
-        """
-        Set a setting value
-        """
+    def set(self, key, value):
+        """Set setting value"""
         try:
-            self.addon.setSetting(setting, str(value))
+            self.addon.setSetting(key, str(value))
             return True
-        except Exception as e:
-            xbmc.log(f'[BlazeTv Config] Error setting {setting}: {str(e)}', xbmc.LOGWARNING)
+        except:
             return False
     
-    def get_m3u_url(self):
-        url = self.get('m3u_url')
-        return url.strip() if url else ''
-
-    def get_username(self):
-        return self.get('username')
+    def get_bool(self, key, default=False):
+        """Get boolean setting value"""
+        try:
+            value = self.addon.getSetting(key)
+            return value.lower() in ('true', '1', 'yes')
+        except:
+            return default
     
-    def get_password(self):
-        return self.get('password')
+    def get_int(self, key, default=0):
+        """Get integer setting value"""
+        try:
+            return int(self.addon.getSetting(key))
+        except:
+            return default
     
-    def get_server_url(self):
-        url = self.get('server_url')
-        return url if url else 'http://mains.services/get.php'
-    
-    def get_stream_type(self):
-        stream_type = self.get('type')
-        return stream_type if stream_type else 'm3u_plus'
+    def get_m3u_source(self):
+        """Get M3U source (url, file, or xtream)"""
+        m3u_url = self.get('m3u_url', '').strip()
+        m3u_file = self.get('m3u_file_path', '').strip()
+        
+        if m3u_url:
+            return {'type': 'url', 'value': m3u_url}
+        elif m3u_file:
+            return {'type': 'file', 'value': m3u_file}
+        else:
+            # Check if Xtream codes are configured
+            username = self.get('username', '').strip()
+            password = self.get('password', '').strip()
+            if username and password:
+                return {'type': 'xtream', 'username': username, 'password': password}
+        
+        return {'type': None, 'value': None}
