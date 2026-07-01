@@ -2,13 +2,6 @@
 
 A feature-rich Kodi addon for streaming live TV channels with playlist support, search, EPG integration, and playback history tracking.
 
-## 🔗 Quick Links
-
-- **📂 Addon Folder**: https://github.com/ta9446955-cpu/https-blazetv.xyz/tree/addon-development/plugin.video.blazetv
-- **📋 Addon Branch**: https://github.com/ta9446955-cpu/https-blazetv.xyz/tree/addon-development
-- **📖 Installation Guide**: https://github.com/ta9446955-cpu/https-blazetv.xyz/blob/addon-development/INSTALLATION_GUIDE.md
-- **🐛 Report Issues**: https://github.com/ta9446955-cpu/https-blazetv.xyz/issues
-
 ## Features
 
 ### Core Features
@@ -33,16 +26,10 @@ A feature-rich Kodi addon for streaming live TV channels with playlist support, 
 
 ## Installation
 
-### Quick Start
-1. **Download**: Clone or download from https://github.com/ta9446955-cpu/https-blazetv.xyz/tree/addon-development/plugin.video.blazetv
-2. **Extract** the `plugin.video.blazetv` folder
-3. **Place** in your Kodi addons directory:
-   - Windows: `%APPDATA%\Kodi\addons\`
-   - Linux/Mac: `~/.kodi/addons/`
-4. **Restart Kodi**
-5. **Configure** your credentials in Settings
-
-**For detailed instructions**, see [INSTALLATION_GUIDE.md](https://github.com/ta9446955-cpu/https-blazetv.xyz/blob/addon-development/INSTALLATION_GUIDE.md)
+1. Download the addon from GitHub
+2. Place the `plugin.video.blazetv` folder in your Kodi `addons` directory
+3. Restart Kodi
+4. Install the addon from Kodi's Add-ons menu
 
 ## Configuration
 
@@ -121,57 +108,10 @@ A feature-rich Kodi addon for streaming live TV channels with playlist support, 
 - No data is sent to external servers
 - History can be cleared at any time
 
-## System Requirements
-
-- Kodi 18 (Leia) or newer
-- Python 3.6+
-- Stable internet connection
-- Active M3U server subscription
-
 ## License
 
 This addon is provided as-is for educational purposes.
 
 ## Support
 
-- **GitHub Issues**: https://github.com/ta9446955-cpu/https-blazetv.xyz/issues
-- **Installation Help**: https://github.com/ta9446955-cpu/https-blazetv.xyz/blob/addon-development/INSTALLATION_GUIDE.md
-- **Documentation**: See files in addon directory
-
-## Project Structure
-
-```
-plugin.video.blazetv/
-├── addon.xml                 # Addon metadata
-├── main.py                   # Main addon script
-├── changelog.txt             # Version history
-├── README.md                 # Full documentation
-├── resources/
-│   ├── settings.xml         # Addon settings
-│   └── lib/
-│       ├── config.py        # Configuration handler
-│       ├── m3u_parser.py    # Playlist parser
-│       ├── epg_handler.py   # Program guide
-│       ├── search_handler.py # Search functionality
-│       └── history_handler.py # History tracking
-└── icon.png, fanart.jpg     # Media assets
-```
-
-## Features Implemented
-
-✅ Secure credential management  
-✅ M3U playlist parsing and caching  
-✅ Channel browsing by category  
-✅ Fuzzy channel search  
-✅ Automatic playback history  
-✅ EPG support (extensible)  
-✅ Configurable settings  
-✅ Debug logging  
-✅ Error handling  
-✅ Complete documentation  
-
----
-
-**Last Updated**: 2026-07-01  
-**Version**: 1.0.0  
-**Repository**: https://github.com/ta9446955-cpu/https-blazetv.xyz
+For issues and questions, visit the GitHub repository.
