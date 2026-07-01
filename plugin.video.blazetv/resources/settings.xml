@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings version="1">
+    <category label="Server Settings">
+        <group label="M3U Playlist">
+            <setting id="m3u_url" type="text" label="M3U Playlist URL" default=""/>
+        </group>
+        <group label="Xtream Codes (optional - leave M3U URL blank to use this instead)">
+            <setting id="server_url" type="text" label="Server URL" default="http://mains.services/get.php"/>
+            <setting id="username" type="text" label="Username" default="" option="hidden"/>
+            <setting id="password" type="text" label="Password" default="" option="hidden"/>
+            <setting id="type" type="text" label="Stream Type (m3u_plus/m3u/pls)" default="m3u_plus"/>
+            <setting id="output" type="text" label="Output Format (ts/m3u8)" default="ts"/>
+        </group>
+    </category>
+    <category label="Display">
+        <group label="Interface">
+            <setting id="show_categories" type="boolean" label="Show Channel Categories" default="true"/>
+            <setting id="load_epg" type="boolean" label="Load EPG Data" default="true"/>
+            <setting id="cache_duration" type="integer" label="Cache Duration (minutes)" default="60" range="5,1440"/>
+        </group>
+    </category>
+    <category label="Features">
+        <group label="Advanced">
+            <setting id="enable_search" type="boolean" label="Enable Channel Search" default="true"/>
+            <setting id="enable_history" type="boolean" label="Enable Playback History" default="true"/>
+            <setting id="history_days" type="integer" label="Keep History (days)" default="30" range="1,365"/>
+            <setting id="enable_debug" type="boolean" label="Enable Debug Logging" default="false"/>
+        </group>
+    </category>
+</settings>
