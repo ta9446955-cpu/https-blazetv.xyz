@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-BlazeTv Kodi Addon - Main Plugin Script
-Handles routing, playlist loading, search, and playback
+BlazeTv Kodi Addon - Main Plugin Script (Enhanced)
+Handles routing, playlist loading, search, and playback with M3U file management
 """
 
 import sys
@@ -21,6 +21,7 @@ addon_dir = xbmcvfs.translatePath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, os.path.join(addon_dir, 'resources', 'lib'))
 
 from m3u_parser import M3UParser
+from m3u_file_handler import M3UFileHandler
 from epg_handler import EPGHandler
 from search_handler import SearchHandler
 from history_handler import HistoryHandler
@@ -33,6 +34,7 @@ args = parse_qs(sys.argv[2][1:])
 # Initialize config and handlers
 config = Config()
 m3u_parser = M3UParser(config)
+m3u_file_handler = M3UFileHandler(config)
 epg_handler = EPGHandler(config)
 search_handler = SearchHandler(m3u_parser)
 history_handler = HistoryHandler(config)
@@ -51,6 +53,12 @@ def show_error(message):
     log(f'ERROR: {message}', xbmc.LOGWARNING)
 
 
+def show_success(message):
+    """Show success notification"""
+    dialog = xbmcgui.Dialog()
+    dialog.notification('BlazeTv', message, xbmcgui.NOTIFICATION_INFO, 3000)
+
+
 def show_main_menu():
     """Display main addon menu"""
     log('Showing main menu')
@@ -60,6 +68,7 @@ def show_main_menu():
         ('Search Channels', 'search') if config.get('enable_search') else None,
         ('Categories', 'categories') if config.get('show_categories') else None,
         ('Recently Watched', 'history') if config.get('enable_history') else None,
+        ('M3U File Management', 'm3u_management'),
         ('Settings', 'settings'),
     ]
     
@@ -77,6 +86,125 @@ def show_main_menu():
     xbmcplugin.endOfDirectory(handle)
 
 
+def show_m3u_management():
+    """Display M3U file management menu"""
+    log('Showing M3U management menu')
+    
+    menu_items = [
+        ('Upload/Browse M3U File', 'browse_m3u'),
+        ('View Current M3U Info', 'view_m3u_info'),
+        ('Export M3U File', 'export_m3u'),
+        ('Restore from Backup', 'restore_backup'),
+        ('List Backups', 'list_backups'),
+    ]
+    
+    for label, action in menu_items:
+        add_menu_item(
+            label=label,
+            action=action,
+            is_folder=False,
+            icon='DefaultFolder.png'
+        )
+    
+    xbmcplugin.endOfDirectory(handle)
+
+
+def browse_m3u_file():
+    """Browse and select M3U file"""
+    log('Opening M3U file browser')
+    file_path = m3u_file_handler.browse_for_m3u_file()
+    
+    if file_path:
+        if m3u_file_handler.save_m3u_file(file_path):
+            show_success('M3U file loaded successfully!')
+            # Clear URL setting when file is selected
+            config.set('m3u_url', '')
+        else:
+            show_error('Failed to load M3U file')
+    
+    xbmcplugin.endOfDirectory(handle)
+
+
+def view_m3u_info():
+    """Display current M3U file information"""
+    log('Viewing M3U info')
+    
+    info = m3u_file_handler.get_m3u_info()
+    
+    if not info:
+        show_error('No M3U file loaded')
+    else:
+        message = f"M3U File Information:\n\n" \
+                  f"Channels: {info['channels']}\n" \
+                  f"Size: {info['size_kb']} KB\n" \
+                  f"Modified: {info['modified']}\n" \
+                  f"Path: {info['path']}"
+        
+        dialog = xbmcgui.Dialog()
+        dialog.textviewer('M3U Information', message)
+    
+    xbmcplugin.endOfDirectory(handle)
+
+
+def export_m3u():
+    """Export current M3U file"""
+    log('Exporting M3U file')
+    
+    if m3u_file_handler.export_m3u_file():
+        show_success('M3U file exported successfully!')
+    else:
+        show_error('Failed to export M3U file')
+    
+    xbmcplugin.endOfDirectory(handle)
+
+
+def restore_backup():
+    """Restore M3U from backup"""
+    log('Opening restore backup dialog')
+    
+    backups = m3u_file_handler.list_backups()
+    
+    if not backups:
+        show_error('No backups available')
+        xbmcplugin.endOfDirectory(handle)
+        return
+    
+    backup_names = [b['name'] for b in backups]
+    dialog = xbmcgui.Dialog()
+    selected = dialog.select('Select Backup to Restore', backup_names)
+    
+    if selected >= 0:
+        if m3u_file_handler.restore_backup(backups[selected]['path']):
+            show_success('M3U restored successfully!')
+        else:
+            show_error('Failed to restore backup')
+    
+    xbmcplugin.endOfDirectory(handle)
+
+
+def list_backups():
+    """List all available backups"""
+    log('Listing backups')
+    
+    backups = m3u_file_handler.list_backups()
+    
+    if not backups:
+        show_error('No backups available')
+        xbmcplugin.endOfDirectory(handle)
+        return
+    
+    for backup in backups:
+        size_kb = round(backup['size'] / 1024, 2)
+        add_menu_item(
+            label=f"{backup['name']} ({size_kb} KB)",
+            action='',
+            is_folder=False,
+            icon='DefaultFile.png'
+        )
+    
+    xbmcplugin.endOfDirectory(handle)
+
+
 def show_channels(category=None):
     """Display all channels or channels in specific category"""
     log(f'Loading channels (category: {category})')
@@ -86,7 +214,7 @@ def show_channels(category=None):
         channels = m3u_parser.get_channels(category)
         
         if not channels:
-            show_error('No channels found. Check your credentials in Settings.')
+            show_error('No channels found. Check your M3U configuration in Settings.')
             return
         
         for channel in channels:
@@ -275,6 +403,18 @@ def router():
         play_channel(channel_url, channel_name)
     elif action == 'settings':
         open_settings()
+    elif action == 'm3u_management':
+        show_m3u_management()
+    elif action == 'browse_m3u':
+        browse_m3u_file()
+    elif action == 'view_m3u_info':
+        view_m3u_info()
+    elif action == 'export_m3u':
+        export_m3u()
+    elif action == 'restore_backup':
+        restore_backup()
+    elif action == 'list_backups':
+        list_backups()
     else:
         show_main_menu()
 
