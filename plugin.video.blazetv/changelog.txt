@@ -1,0 +1,33 @@
+[1.0.0] - 2024-01-01
+Initial Release
+- Live channel streaming from M3U playlists
+- Channel browsing by category
+- Channel search functionality with fuzzy matching
+- Playback history tracking
+- EPG (Electronic Program Guide) support
+- Configurable server credentials
+- Playlist caching for offline access
+- Debug logging support
+
+Features:
+✓ Browse and stream live TV channels
+✓ Organize channels by category
+✓ Search for channels by name
+✓ Track watched channels with history
+✓ View program guide information
+✓ Automatic playlist caching
+✓ Configurable cache duration
+✓ Playback statistics
+
+Known Limitations:
+- EPG is placeholder (requires external XMLTV source integration)
+- Some features may require additional configuration
+
+Future Enhancements:
+- XMLTV EPG integration
+- Favorites/bookmarking
+- Channel sorting options
+- Subtitle support
+- Recording functionality
+- Advanced scheduling
+- Multi-account support
