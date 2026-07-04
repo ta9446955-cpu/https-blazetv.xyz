@@ -51,7 +51,7 @@ class Config:
     
     def get_server_url(self):
         url = self.get('server_url')
-        return url if url else 'http://mains.services/get.php'
+        return url if url else 
     
     def get_stream_type(self):
         stream_type = self.get('type')
