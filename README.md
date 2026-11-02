@@ -7,7 +7,7 @@ Official Kodi repository for **BlazeTv** - Free TV streaming addon.
 | File | Direct Download |
 |---|---|
 | 🗂️ **Repository zip** (recommended - enables auto-updates) | [repository.blazetv.zip](https://raw.githubusercontent.com/ta9446955-cpu/https-blazetv.xyz/main/repository.blazetv/repository.blazetv.zip) |
-| 📦 **Addon zip** (v1.0.16, install directly, no auto-updates) | [plugin.video.blazetv-1.0.16.zip](https://raw.githubusercontent.com/ta9446955-cpu/https-blazetv.xyz/main/plugin.video.blazetv/plugin.video.blazetv-1.0.16.zip) |
+| 📦 **Addon zip** (v1.0.18, install directly, no auto-updates) | [plugin.video.blazetv-1.0.16.zip](https://raw.githubusercontent.com/ta9446955-cpu/https-blazetv.xyz/main/plugin.video.blazetv/plugin.video.blazetv-1.0.16.zip) |
 
 On Android/mobile, open the link in your browser to download the zip, then in Kodi use **Settings > Add-ons > Install from zip file** and pick it from your Downloads folder.
 
